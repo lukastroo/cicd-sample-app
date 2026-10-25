@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+# workspace van Jenkins blijft bestaan tussen builds, dus tempdir eerst opruimen
+rm -rf tempdir
 mkdir tempdir
 mkdir tempdir/templates
 mkdir tempdir/static
@@ -21,5 +23,7 @@ _EOF_
 
 cd tempdir || exit
 docker build -t sampleapp .
+# oude container weg als die nog bestaat, anders is de naam al in gebruik
+docker rm -f samplerunning 2>/dev/null || true
 docker run -t -d -p 5050:5050 --name samplerunning sampleapp
 docker ps -a 
